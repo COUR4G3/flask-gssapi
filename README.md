@@ -38,7 +38,7 @@ Usage is fairly simple:
 
 ```python
 from flask import Flask, render_template
-from flask.ext.negotiate import Negotiate
+from flask.ext.spnego import Negotiate
 
 app = Flask(__name__)
 
@@ -67,6 +67,8 @@ in your startup script or service file.
 The defaults should be sufficient for most purposes, but you may need to be
 changed under certain circumstances:
 
+|Key|Description|
+|---|---|
 |`NEGOTIATE_AUTH_PRINCIPAL`|The service principal you want to authenticate against. Defaults to `HTTP@$FQDN` where $FQDN is the value provided by `socket.getfqdn`.|
 
 ## Todo
