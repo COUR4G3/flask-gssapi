@@ -1,32 +1,20 @@
-import os
-import re
-
 from setuptools import setup
 
-def get_version():
-    pattern = re.compile(r'__version__\s+=\s+[\'\"](.*)[\'\"]')
-    with open('flask_spnego.py', 'r') as lines:
-        for line in lines:
-            match = re.search(pattern, line)
-            if match:
-                return match.groups()[0].strip()
-    raise Exception('Cannot find version')
+from flask_gssapi import __version__ as version
 
 setup(
-    name='Flask-SPNEGO',
-    version=get_version(),
-    url='https://github.com/cour4g3/flask-spnego',
+    name='Flask-GSSAPI',
+    version=version,
+    url='https://github.com/cour4g3/flask-gssapi',
     license='MIT',
     author='Michael de Villiers',
-    author_email='twistedcomplexity@gmail.com',
-    description='HTTP Negotiate (SPNEGO) authentication support for Flask applications.',
-    long_description=open('README.md', 'r').read(),
-    py_modules=['flask_spnego'],
-    zip_safe=False,
-    include_package_data=True,
+    author_email='michael@cour4g3.me',
+    description='HTTP Negotiate (GSSAPI) authentication support for Flask applications.',
+    long_description=open('README.rst', 'r').read(),
+    py_modules=['flask_gssapi'],
     platforms='any',
     install_requires=[
-        'Flask',
+        'flask',
         'gssapi',
     ],
     classifiers=[
@@ -39,7 +27,6 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ]
