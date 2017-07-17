@@ -39,10 +39,17 @@ Usage is fairly simple:
 
   gssapi = GSSAPI(app)
 
+  # Here, you'll need to be authenticated
   @app.route('/secret')
   @gssapi.require_auth
   def secret_view():
       return render_template('secret.html')
+
+  # Here, you'll need to be a specific user
+  @app.route('/admin')
+  @gssapi.require_user(user=admin)
+  def admin_view():
+      return render_template('admin.html')
 
 Configuration
 =============

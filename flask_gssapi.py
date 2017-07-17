@@ -1,12 +1,16 @@
-import base64
-import gssapi
-import os
-import socket
+# -*- encoding: utf-8; -*-
+# pylint: disable=R0201, W0212
+"""GSSAPI authentication plugin for Flask"""
 
-from flask import abort, current_app, make_response, request, Response
+import base64
+import socket
 from functools import wraps
 
+import gssapi
+from flask import current_app, make_response, request, Response
+
 __version__ = '1.0'
+
 
 class GSSAPI(object):
     """
@@ -52,25 +56,38 @@ class GSSAPI(object):
             out_token = ctx.step(in_token)
 
             if ctx.complete:
-                return out_token
+                username = ctx._inquire(initiator_name=True).initiator_name
+                return username, out_token
 
-        return False
+        return None, None
 
-    def require_auth(self, view_func):
+    def require_auth(self):
         """A decorator to protect views with Negotiate authentication."""
-        @wraps(view_func)
-        def wrapper(*args, **kwargs):
-            out_token = self.authenticate()
-            if out_token:
-                response = make_response(view_func(*args, **kwargs))
-                response.headers['WWW-Authenticate'] = 'Negotiate ' + \
-                    base64.b64encode(out_token).decode('utf-8')
-                return response
-            else:
+        return self.require_user()
+
+    def require_user(self, user=None):
+        """A decorator to protect views with Negotiate authentication.
+           Enhanced version wich accept a user parameter to require a
+           specific user.
+        """
+        def _require_auth(self, view_func):
+            @wraps(view_func)
+            def wrapper(*args, **kwargs):
+                """ Effective wrapper """
+                username, out_token = self.authenticate()
+                if username and out_token:
+                    b64_token = base64.b64encode(out_token).decode('utf-8')
+                    auth_data = 'Negotiate {0}'.format(b64_token)
+                    if not user or user == username:
+                        response = make_response(view_func(*args, **kwargs))
+                    else:
+                        response = Response(status=403)
+                    response.headers['WWW-Authenticate'] = auth_data
+                    return response
                 return Response(
                     status=401,
-                    headers={'WWW-Authenticate': 'Negotiate' if not out_token \
-                        else 'Negotiate ' + base64.b64encode(out_token).decode('utf-8')},
+                    headers={'WWW-Authenticate': 'Negotiate'},
                 )
 
-        return wrapper
+            return wrapper
+        return _require_auth
