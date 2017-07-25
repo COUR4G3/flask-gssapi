@@ -57,7 +57,7 @@ class GSSAPI(object):
 
             if ctx.complete:
                 username = ctx._inquire(initiator_name=True).initiator_name
-                return username, out_token
+                return str(username), out_token
 
         return None, None
 
@@ -70,7 +70,7 @@ class GSSAPI(object):
            Enhanced version wich accept a user parameter to require a
            specific user.
         """
-        def _require_auth(self, view_func):
+        def _require_auth(view_func):
             @wraps(view_func)
             def wrapper(*args, **kwargs):
                 """ Effective wrapper """
