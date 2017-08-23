@@ -1,0 +1,40 @@
+Source: flask-gssapi
+Section: python
+Priority: optional
+Maintainer: Michael de Villiers <michael@cour4g3.me>
+Uploaders: Michael de Villiers <michael@cour4g3.me>
+Build-Depends:
+ debhelper (>= 9),
+ dh-python,
+ python-all (>= 2.6),
+ python-flask,
+ python-gssapi,
+ python-setuptools,
+ python3-all (>= 3.3),
+ python3-flask,
+ python3-gssapi,
+ python3-setuptools,
+X-Python-Version: >= 2.6
+X-Python3-Version: >= 3.3
+Standards-Version: 3.9.8
+Homepage: https://pypi.python.org/pypi/Flask-GSSAPI
+Vcs-Git: https://github.com/cour4g3/flask-gssapi.git
+Vcs-Browser: https://github.com/cour4g3/flask-gssapi
+
+Package: python-flask-gssapi
+Architecture: all
+Depends:
+ python-flask,
+ python-gssapi,
+ ${misc:Depends},
+ ${python:Depends}
+Description: HTTP Negotiate (GSSAPI) authentication support for Flask applications
+
+Package: python3-flask-gssapi
+Architecture: all
+Depends:
+ python3-flask,
+ python3-gssapi,
+ ${misc:Depends},
+ ${python3:Depends}
+Description: HTTP Negotiate (GSSAPI) authentication support for Flask applications
