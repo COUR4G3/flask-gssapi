@@ -1,0 +1,5 @@
+flask-gssapi (1.1.1) unstable; urgency=low
+
+  * Initial release
+
+ -- Thomas Sarboni <max-k@post.com>  Wed, 23 Aug 2017 10:42:00 +0100
