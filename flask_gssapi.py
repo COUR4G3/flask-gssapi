@@ -9,7 +9,7 @@ from functools import wraps
 import gssapi
 from flask import current_app, make_response, request, Response
 
-__version__ = '1.1.1'
+__version__ = '1.2'
 
 
 class GSSAPI(object):
@@ -79,7 +79,7 @@ class GSSAPI(object):
                     b64_token = base64.b64encode(out_token).decode('utf-8')
                     auth_data = 'Negotiate {0}'.format(b64_token)
                     if not user or user == username:
-                        response = make_response(view_func(*args, **kwargs))
+                        response = make_response(view_func(*args, username=username, **kwargs))
                     else:
                         response = Response(status=403)
                     response.headers['WWW-Authenticate'] = auth_data

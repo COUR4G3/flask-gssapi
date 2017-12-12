@@ -51,6 +51,12 @@ Usage is fairly simple:
   def admin_view():
       return render_template('admin.html')
 
+  # You can also get the username as a keyword argument
+  @app.route('/another-secret')
+  @gssapi.require_auth
+  def admin_view(username=''):
+      return render_template('another-secret.html', username=username)
+
 Configuration
 =============
 For security purposes your application should probably not have read access to
