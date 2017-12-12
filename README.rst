@@ -47,9 +47,15 @@ Usage is fairly simple:
 
   # Here, you'll need to be a specific user
   @app.route('/admin')
-  @gssapi.require_user(user=admin)
+  @gssapi.require_user('admin') # or old-style @gssapi.require_user(user='admin')
   def admin_view():
       return render_template('admin.html')
+
+  # Or a list of users
+  @app.route('/staff')
+  @gssapi.require_user('admin', 'michael')
+  def staff_view():
+      return render_template('staff.html')
 
   # You can also get the username as a keyword argument
   @app.route('/another-secret')

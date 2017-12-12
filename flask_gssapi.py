@@ -9,7 +9,7 @@ from functools import wraps
 import gssapi
 from flask import current_app, make_response, request, Response
 
-__version__ = '1.2'
+__version__ = '1.3'
 
 
 class GSSAPI(object):
@@ -65,11 +65,13 @@ class GSSAPI(object):
         """A decorator to protect views with Negotiate authentication."""
         return self.require_user()
 
-    def require_user(self, user=None):
-        """A decorator to protect views with Negotiate authentication.
-           Enhanced version wich accept a user parameter to require a
-           specific user.
-        """
+    def require_user(self, *users, user=None):
+        """A decorator to protect views with Negotiate authentication."""
+
+        # accept old-style single user keyword-argument as well
+        if user:
+            users.append(user)
+
         def _require_auth(view_func):
             @wraps(view_func)
             def wrapper(*args, **kwargs):
@@ -78,7 +80,7 @@ class GSSAPI(object):
                 if username and out_token:
                     b64_token = base64.b64encode(out_token).decode('utf-8')
                     auth_data = 'Negotiate {0}'.format(b64_token)
-                    if not user or user == username:
+                    if not users or username in users:
                         response = make_response(view_func(*args, username=username, **kwargs))
                     else:
                         response = Response(status=403)
