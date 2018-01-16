@@ -70,7 +70,7 @@ class GSSAPI(object):
 
         # accept old-style single user keyword-argument as well
         if user:
-            users.append(user)
+            users = (*users, user)
 
         def _require_auth(view_func):
             @wraps(view_func)
@@ -81,7 +81,9 @@ class GSSAPI(object):
                     b64_token = base64.b64encode(out_token).decode('utf-8')
                     auth_data = 'Negotiate {0}'.format(b64_token)
                     if not users or username in users:
-                        response = make_response(view_func(*args, username=username, **kwargs))
+                        response = make_response(view_func(*args,
+                                                           username=username,
+                                                           **kwargs))
                     else:
                         response = Response(status=403)
                     response.headers['WWW-Authenticate'] = auth_data
