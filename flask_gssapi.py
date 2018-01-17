@@ -9,7 +9,7 @@ from functools import wraps
 import gssapi
 from flask import current_app, make_response, request, Response
 
-__version__ = '1.3'
+__version__ = '1.3.1'
 
 
 class GSSAPI(object):
