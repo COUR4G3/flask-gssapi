@@ -33,9 +33,10 @@ class GSSAPI(object):
             app.extensions = {}
 
         service_name = app.config.get('GSSAPI_SERVICE_NAME', 'HTTP')
-        hostname = app.config.get('GSSAPI_HOSTNAME', socket.getfqdn())
-        principal = '{}@{}'.format(service_name, hostname)
-        name = gssapi.Name(principal, gssapi.NameType.hostbased_service)
+        name = app.config.get('GSSAPI_HOSTNAME', socket.getfqdn())
+        if name is not None:
+            principal = '{}@{}'.format(service_name, name)
+            name = gssapi.Name(principal, gssapi.NameType.hostbased_service)
 
         app.extensions['gssapi'] = {
             'creds': gssapi.Credentials(name=name, usage='accept'),
