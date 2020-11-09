@@ -41,7 +41,7 @@ Usage is fairly simple:
 
   # Here, you'll need to be authenticated
   @app.route('/secret')
-  @gssapi.require_auth
+  @gssapi.require_auth()
   def secret_view():
       return render_template('secret.html')
 
