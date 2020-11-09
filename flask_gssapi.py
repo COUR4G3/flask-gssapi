@@ -9,7 +9,7 @@ from functools import wraps
 import gssapi
 from flask import current_app, make_response, request, Response
 
-__version__ = '1.4.0'
+__version__ = '1.4.1'
 
 
 class GSSAPI(object):
@@ -58,9 +58,13 @@ class GSSAPI(object):
 
             if ctx.complete:
                 username = ctx._inquire(initiator_name=True).initiator_name
-                return str(username), out_token
+                return str(username), out_token, ctx.complete
+        elif request.headers.get('Authorization', '').startswith('Basic '):
+            in_token = base64.b64decode(request.headers['Authorization'][6:])
 
-        return None, None
+            return in_token.split(':', 1), True
+
+        return None, None, False
 
     def require_auth(self):
         """A decorator to protect views with Negotiate authentication."""
@@ -77,22 +81,31 @@ class GSSAPI(object):
             @wraps(view_func)
             def wrapper(*args, **kwargs):
                 """ Effective wrapper """
-                username, out_token = self.authenticate()
-                if username and out_token:
+                username, out_token, complete = self.authenticate()
+                if out_token:
                     b64_token = base64.b64encode(out_token).decode('utf-8')
                     auth_data = 'Negotiate {0}'.format(b64_token)
-                    if not users or username in users:
+                    if complete and not users or username in users:
                         response = make_response(view_func(*args,
                                                            username=username,
                                                            **kwargs))
+                    elif complete:
+                        response = Response(
+                            status=403,
+                            headers={'WWW-Authenticate': auth_data},
+                        )
                     else:
-                        response = Response(status=403)
-                    response.headers['WWW-Authenticate'] = auth_data
-                    return response
-                return Response(
-                    status=401,
-                    headers={'WWW-Authenticate': 'Negotiate'},
-                )
+                        response = Response(
+                            status=401,
+                            headers={'WWW-Authenticate': [auth_data, 'Basic realm="Basic auth test"']},
+                        )
+                else:
+                    response = Response(
+                        status=401,
+                        headers={'WWW-Authenticate': ['Negotiate', 'Basic realm="Basic auth test"']},
+                    )
+
+                return response
 
             return wrapper
         return _require_auth
