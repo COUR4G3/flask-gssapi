@@ -57,7 +57,7 @@ class GSSAPI(object):
             out_token = ctx.step(in_token)
 
             if ctx.complete:
-                username = ctx._inquire(initiator_name=True).initiator_name
+                username = ctx.initiator_name
                 return str(username), out_token
 
         return None, None
@@ -78,9 +78,7 @@ class GSSAPI(object):
             def wrapper(*args, **kwargs):
                 """ Effective wrapper """
                 username, out_token = self.authenticate()
-                if username and out_token:
-                    b64_token = base64.b64encode(out_token).decode('utf-8')
-                    auth_data = 'Negotiate {0}'.format(b64_token)
+                if username:
                     if not users or username in users:
                         request.environ['REMOTE_USER'] = username
                         if username_arg:
@@ -88,7 +86,10 @@ class GSSAPI(object):
                         response = make_response(view_func(*args, **kwargs))
                     else:
                         response = Response(status=403)
-                    response.headers['WWW-Authenticate'] = auth_data
+                    if out_token:
+                        b64_token = base64.b64encode(out_token).decode('utf-8')
+                        auth_data = 'Negotiate {0}'.format(b64_token)
+                        response.headers['WWW-Authenticate'] = auth_data
                     return response
                 return Response(
                     status=401,
