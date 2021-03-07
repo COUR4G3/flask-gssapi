@@ -57,7 +57,7 @@ class GSSAPI(object):
             out_token = ctx.step(in_token)
 
             if ctx.complete:
-                username = ctx._inquire(initiator_name=True).initiator_name
+                username = ctx.initiator_name
                 return str(username), out_token
 
         return None, None
