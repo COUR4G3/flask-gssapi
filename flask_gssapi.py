@@ -82,6 +82,7 @@ class GSSAPI(object):
                     b64_token = base64.b64encode(out_token).decode('utf-8')
                     auth_data = 'Negotiate {0}'.format(b64_token)
                     if not users or username in users:
+                        request.environ['REMOTE_USER'] = username
                         response = make_response(view_func(*args,
                                                            username=username,
                                                            **kwargs))
