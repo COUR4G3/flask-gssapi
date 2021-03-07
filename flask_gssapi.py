@@ -78,16 +78,17 @@ class GSSAPI(object):
             def wrapper(*args, **kwargs):
                 """ Effective wrapper """
                 username, out_token = self.authenticate()
-                if username and out_token:
-                    b64_token = base64.b64encode(out_token).decode('utf-8')
-                    auth_data = 'Negotiate {0}'.format(b64_token)
+                if username:
                     if not users or username in users:
                         response = make_response(view_func(*args,
                                                            username=username,
                                                            **kwargs))
                     else:
                         response = Response(status=403)
-                    response.headers['WWW-Authenticate'] = auth_data
+                    if out_token:
+                        b64_token = base64.b64encode(out_token).decode('utf-8')
+                        auth_data = 'Negotiate {0}'.format(b64_token)
+                        response.headers['WWW-Authenticate'] = auth_data
                     return response
                 return Response(
                     status=401,
