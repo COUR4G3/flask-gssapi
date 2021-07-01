@@ -19,13 +19,13 @@ class GSSAPI(object):
         Samba or FreeIPA.
 
     """
-    def __init__(self, app=None):
+    def __init__(self, app=None, login_manager=None):
         self.app = app
 
         if app is not None:
-            self.init_app(app)
+            self.init_app(app, login_manager)
 
-    def init_app(self, app):
+    def init_app(self, app, login_manager):
         """
         Initialises the Negotiate extension for the given application.
         """
@@ -40,6 +40,7 @@ class GSSAPI(object):
 
         app.extensions['gssapi'] = {
             'creds': gssapi.Credentials(name=name, usage='accept'),
+            'login_manager': login_manager,
         }
 
     def authenticate(self):
@@ -91,10 +92,16 @@ class GSSAPI(object):
                         auth_data = 'Negotiate {0}'.format(b64_token)
                         response.headers['WWW-Authenticate'] = auth_data
                     return response
-                return Response(
-                    status=401,
-                    headers={'WWW-Authenticate': 'Negotiate'},
-                )
+
+                login_manager = current_app.extensions['gssapi']['login_manager']
+                if login_manager:
+                    resp = login_manager.unauthorized()
+                    resp.headers['WWW-Authenticate'] = 'Negotiate'
+                else:
+                    return Response(
+                        status=401,
+                        headers={'WWW-Authenticate': 'Negotiate'},
+                    )
 
             return wrapper
         return _require_auth
