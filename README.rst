@@ -59,7 +59,7 @@ Usage is fairly simple:
 
   # You can also get the username as a keyword argument
   @app.route('/another-secret')
-  @gssapi.require_auth
+  @gssapi.require_auth()
   def admin_view(username=''):
       return render_template('another-secret.html', username=username)
 
