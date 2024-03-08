@@ -11,7 +11,7 @@ gssapi = GSSAPI(app)
 
 @app.route("/")
 @app.route("/index")
-@gssapi.require_auth
+@gssapi.require_auth()
 def index(username=''):
     return render_template('index.html', user=username)
 
