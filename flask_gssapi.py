@@ -3,7 +3,6 @@
 """GSSAPI authentication plugin for Flask"""
 
 import base64
-import socket
 from functools import wraps
 
 import gssapi
@@ -33,7 +32,7 @@ class GSSAPI(object):
             app.extensions = {}
 
         service_name = app.config.get('GSSAPI_SERVICE_NAME', 'HTTP')
-        name = app.config.get('GSSAPI_HOSTNAME', socket.getfqdn())
+        name = app.config.get('GSSAPI_HOSTNAME', None)
         if name is not None:
             principal = '{}@{}'.format(service_name, name)
             name = gssapi.Name(principal, gssapi.NameType.hostbased_service)

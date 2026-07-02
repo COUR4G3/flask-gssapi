@@ -88,8 +88,16 @@ changed under certain circumstances:
 |                       | by default this is `HTTP` which most browsers use.   |
 +-----------------------+------------------------------------------------------+
 | `GSSAPI_HOSTNAME`     | The hostname you want authenticate against, by       |
-|                       | default this is acquired from `socket.fqdn()`.       |
+|                       | default this is `None`.                              |
 +-----------------------+------------------------------------------------------+
+
+If `GSSAPI_HOSTNAME` is `None`, Flask-GSSAPI will accept authentication
+to any principal that has keys in the configured keytab.  It is also
+possible, but not recommended, to specify that Flask-GSSAPI only
+accept authentication to a particular service principal by setting
+`GSSAPI_HOSTNAME`.  If you do this, then a name will be constructed as
+`<GSSAPI_SERVICE_NAME>@<GSSAPI_HOSTNAME>` and interpreted as a host-based
+service.  This will, however, break deployments that use virtual hosts.
 
 Todo
 ====

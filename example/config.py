@@ -13,5 +13,6 @@ class Config(object):
     # The service name you want to authenticate against
     # GSSAPI_SERVICE_NAME = 'HTTP'
 
-    # The hostname you want authenticate against
-    # GSSAPI_HOSTNAME = '...'
+    # The hostname you want authenticate against. Leave unset to let GSSAPI
+    # select any matching acceptor principal from the configured keytab.
+    # GSSAPI_HOSTNAME = None
